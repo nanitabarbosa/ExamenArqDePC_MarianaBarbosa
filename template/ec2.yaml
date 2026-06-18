@@ -111,6 +111,8 @@ Resources:
 
               <p><strong>Código estudiantil:</strong> 0192338</p>
 
+              <p><strong>Modificación colaborativa:</strong> Cambio realizado por Hannah Cabarico Salazar (192367) mediante Pull Request.</p>
+
               <p>Examen Final Arquitectura de Computadores</p>
 
               <button onclick="mostrarMensaje()">Ver mensaje</button>
@@ -118,7 +120,7 @@ Resources:
 
             <script>
               function mostrarMensaje() {
-                alert("Página desplegada exitosamente desde AWS EC2 con CloudFormation y GitHub Actions 🚀");
+                alert("Página modificada por Hannah Cabarico Salazar (192367) como parte del trabajo colaborativo mediante Pull Request ");
               }
             </script>
 
