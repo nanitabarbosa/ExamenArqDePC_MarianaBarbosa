@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 creada desde GitHub Actions
+
+Parameters:
+  InstanceDescription:
+    Description: Descripcion del servidor web
+    Type: String
+    Default: Servidor Web Apache
+
+  SecurityGroupDescription:
+    Description: Security Group Description
+    Type: String
+    Default: Acceso HTTP al servidor
+
+Resources:
+
+  ServerSecurityGroupClase:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Ref SecurityGroupDescription
+
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+      Tags:
+        - Key: Name
+          Value: SG-HTTP-Clase-CF
+
+  MyEc2Github:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c101f26f147fa7fd
+      InstanceType: t3.micro
+
+      SecurityGroupIds:
+        - !Ref ServerSecurityGroupClase
+
+      Tags:
+        - Key: Name
+          Value: EC2-Clase-CF
+
+        - Key: Proyecto
+          Value: Class-CloudFormation
+
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+
+          cat > /var/www/html/index.html <<EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Examen Final Arquitectura de Computadores</title>
+
+            <style>
+              body {
+                background-color: #f4f4f4;
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+              }
+
+              .container {
+                background-color: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 0 15px rgba(0,0,0,0.2);
+                text-align: center;
+              }
+
+              h1 {
+                color: #1f4e79;
+              }
+
+              p {
+                font-size: 18px;
+                color: #333;
+              }
+
+              button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+              }
+
+              button:hover {
+                background-color: #0056b3;
+              }
+            </style>
+          </head>
+
+          <body>
+            <div class="container">
+              <h1>Examen Final Arquitectura de Computadores</h1>
+
+              <p><strong>Nombre completo:</strong> Mariana Barbosa Torrado</p>
+
+              <p><strong>Código estudiantil:</strong> 0192338</p>
+
+              <p>Examen Final Arquitectura de Computadores</p>
+
+              <button onclick="mostrarMensaje()">Ver mensaje</button>
+            </div>
+
+            <script>
+              function mostrarMensaje() {
+                alert("Página desplegada exitosamente desde AWS EC2 con CloudFormation y GitHub Actions 🚀");
+              }
+            </script>
+
+          </body>
+          </html>
+          EOF
+
+Outputs:
+
+  InstanceId:
+    Description: ID de la instancia EC2
+    Value: !Ref MyEc2Github
+
+  PublicIP:
+    Description: Dirección IP pública de la instancia
+    Value: !GetAtt MyEc2Github.PublicIp
